@@ -10,10 +10,25 @@ Backend API functions for the Olinethra project. The `api/` directory contains V
 
 ## Setup
 
-From this directory, install the dependencies:
+From this directory, install the backend runtime packages listed in `package.json` (the lockfile keeps installs reproducible):
 
 ```powershell
 npm install
+```
+
+Run this command again whenever backend dependencies change. For a clean install matching `package-lock.json`, use `npm ci` instead.
+
+The backend packages installed by this command are:
+
+- `cors`
+- `dotenv`
+- `express`
+- `firebase-admin`
+
+The `dev` script also uses `nodemon`; install it as a development dependency if you want to run that script:
+
+```powershell
+npm install --save-dev nodemon
 ```
 
 Create a `.env` file in `backend/`:
@@ -29,7 +44,7 @@ Use the values from your Firebase service account. Keep this file private and do
 
 ## Run the API locally with Vercel
 
-The API functions live in `api/`, so run the Vercel development server from the project root (one directory above `backend/`). Install Vercel CLI if needed, then run:
+The API functions live in `api/`, so run the Vercel development server from the project root (one directory above `backend/`). Vercel CLI is a separate tool and is not a backend package; run it through `npx` (which fetches it if needed), then start the server:
 
 ```powershell
 cd ..

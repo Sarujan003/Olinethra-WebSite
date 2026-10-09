@@ -1,78 +1,96 @@
 
+import { Link } from "react-router-dom";
+
 export default function ProjectCard({ project, onInspect, isAdmin, onDelete }) {
+  // Determine badge colors based on badge text
+  const badgeText = (project.badge || project.category || "PROD-SYS").toUpperCase();
+  let badgeStyle = "bg-[#171b26] text-white";
+  if (badgeText.includes("FINTECH") || badgeText.includes("HFT")) {
+    badgeStyle = "bg-[#171b26] text-white";
+  } else if (badgeText.includes("HEALTH") || badgeText.includes("AI")) {
+    badgeStyle = "bg-[#006178] text-white";
+  } else if (badgeText.includes("SUPPLY") || badgeText.includes("ML") || badgeText.includes("CHAIN")) {
+    badgeStyle = "bg-[#e55300] text-white";
+  }
+
+  const briefUrl = `/projects/brief/${project.id}`;
+
   return (
-    <article className="group flex flex-col rounded-xl bg-white shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-black/5">
-      <div className="relative h-52 w-full overflow-hidden bg-slate-100">
+    <article className="group flex flex-col rounded-2xl bg-white shadow-xs hover:shadow-xl transition-all duration-300 overflow-hidden border border-black/5">
+      {/* Top Image Visualizer */}
+      <div className="relative h-56 w-full overflow-hidden bg-slate-100 shrink-0">
         <img
           src={project.image_url || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"}
           alt={project.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
-        <div className="absolute top-3 left-3 px-3 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-[11px] font-mono font-bold text-[#a33e00]">
-          {project.category?.toUpperCase()}
-        </div>
-        <div className="absolute top-3 right-3 px-2 py-0.5 rounded bg-white/90 backdrop-blur-md text-[11px] font-mono text-[#171b26]">
-          {project.badge || "PROD-SYS"}
-        </div>
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-[13px]">
-          <span className="font-semibold">{project.client}</span>
-          <span className="text-[11px] opacity-80 font-mono">{project.tag}</span>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+
+        {/* Top Left Badge Overlay */}
+        <div className={`absolute top-3.5 left-3.5 px-3 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider shadow-xs ${badgeStyle}`}>
+          {badgeText}
         </div>
       </div>
 
-      <div className="p-6 flex-1 flex flex-col justify-between gap-4">
-        <div>
-          <h2 className="text-[18px] font-bold text-[#171b26] group-hover:text-[#004fcb] transition-colors">
+      {/* Card Content Body */}
+      <div className="p-6 flex-1 flex flex-col justify-between gap-5">
+        <div className="space-y-2.5">
+          <h3 className="text-2xl font-extrabold text-[#171b26] tracking-tight group-hover:text-[#004fcb] transition-colors">
             {project.title}
-          </h2>
-          <p className="text-[14px] text-[#424656] mt-2 line-clamp-2">
+          </h3>
+          <p className="text-[14px] text-[#424656] leading-relaxed font-normal line-clamp-3">
             {project.summary}
           </p>
         </div>
 
-        {project.challenge && (
-          <div className="p-3 rounded-lg bg-[#f2f3ff] text-[13px] text-[#424656]">
-            <span className="font-bold text-[#004fcb] flex items-center gap-1 mb-1">
-              <span className="material-symbols-outlined text-[15px]">troubleshoot</span>
-              The Architecture Challenge
+        {/* Metric Grid Box */}
+        <div className="bg-[#f2f3ff] rounded-xl p-4 grid grid-cols-2 gap-4 border border-black/5">
+          <div>
+            <span className="text-[12px] font-medium text-slate-500 block mb-0.5">
+              {project.metric1_label || "Metric 1"}
             </span>
-            <p className="line-clamp-2">{project.challenge}</p>
+            <span className="text-[18px] md:text-[20px] font-extrabold text-[#004fcb]">
+              {project.metric1_val || "N/A"}
+            </span>
           </div>
-        )}
-
-        <div className="grid grid-cols-2 gap-2">
-          <div className="p-2.5 rounded-lg bg-[#ebedfc]">
-            <span className="text-[11px] text-[#424656] block">{project.metric1_label || "Metric 1"}</span>
-            <span className="text-[16px] font-bold text-[#004fcb]">{project.metric1_val || "N/A"}</span>
-          </div>
-          <div className="p-2.5 rounded-lg bg-[#ebedfc]">
-            <span className="text-[11px] text-[#424656] block">{project.metric2_label || "Metric 2"}</span>
-            <span className="text-[16px] font-bold text-[#fe6a17]">{project.metric2_val || "N/A"}</span>
+          <div>
+            <span className="text-[12px] font-medium text-slate-500 block mb-0.5">
+              {project.metric2_label || "Metric 2"}
+            </span>
+            <span className="text-[18px] md:text-[20px] font-extrabold text-[#fe6a17]">
+              {project.metric2_val || "N/A"}
+            </span>
           </div>
         </div>
 
+        {/* Technologies Pills */}
         <div className="flex flex-wrap gap-1.5">
           {(Array.isArray(project.technologies) ? project.technologies : []).map((tech, i) => (
-            <span key={i} className="px-2 py-0.5 rounded bg-[#ebedfc] text-[11px] font-mono text-[#424656]">
+            <span
+              key={i}
+              className="px-2.5 py-1 rounded-md bg-[#ebedfc] text-[12px] font-mono font-medium text-[#171b26]"
+            >
               {tech}
             </span>
           ))}
         </div>
 
-        <div className="flex items-center gap-2 pt-2">
-          <button
-            onClick={() => onInspect(project)}
-            className="flex-1 py-2 rounded-lg bg-[#0265ff] text-white text-[13px] font-semibold hover:bg-[#004fcb] transition-colors flex items-center justify-center gap-1"
+        {/* Bottom Link Action */}
+        <div className="pt-2 flex items-center justify-between border-t border-slate-100">
+          <Link
+            to={briefUrl}
+            className="text-[#004fcb] hover:text-[#0265ff] font-bold text-[14px] flex items-center gap-1.5 transition-all cursor-pointer group/link"
           >
-            <span>Inspect Architecture</span>
-            <span className="material-symbols-outlined text-[16px]">terminal</span>
-          </button>
+            <span>Inspect Architecture Brief</span>
+            <span className="material-symbols-outlined text-[18px] transition-transform group-hover/link:translate-x-1">
+              arrow_forward
+            </span>
+          </Link>
 
           {isAdmin && onDelete && (
             <button
               onClick={() => onDelete(project.id)}
-              className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+              className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors cursor-pointer"
               title="Delete Project"
             >
               <span className="material-symbols-outlined text-[18px]">delete</span>

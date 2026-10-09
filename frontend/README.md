@@ -9,11 +9,25 @@ React frontend built with Vite.
 
 ## Setup
 
-From this directory, install the dependencies:
+From this directory, install all frontend runtime and development packages listed in `package.json` (the lockfile keeps installs reproducible):
 
 ```powershell
 npm install
 ```
+
+Run this command again whenever dependencies change. `npm ci` can be used instead for a clean install that follows `package-lock.json` exactly.
+
+The frontend runtime packages are:
+
+- `@tailwindcss/vite`
+- `firebase`
+- `lucide-react`
+- `react`
+- `react-dom`
+- `react-router-dom`
+- `tailwindcss`
+
+The frontend development packages are `@types/react`, `@types/react-dom`, `@vitejs/plugin-react`, `oxlint`, and `vite`. `npm install` installs both lists.
 
 Create a `.env` file in `frontend/` with the Firebase web app values:
 

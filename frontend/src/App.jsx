@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import Preloader from "./components/Preloader";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import TechStackManager from "./pages/admin/TechStackManager";
@@ -11,6 +12,7 @@ import InquiriesManager from "./pages/admin/InquiriesManager";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import { AdminAuthProvider } from "./context/AdminAuthContext";
+import { PreloaderProvider, usePreloader } from "./context/PreloaderContext";
 import Contact from "./pages/Contact";
 import Home from "./pages/Home";
 import Projects from "./pages/Projects";
@@ -20,9 +22,14 @@ import ScheduleConsultation from "./pages/ScheduleConsultation";
 
 function Layout() {
   const location = useLocation();
+  const { preloaderDone } = usePreloader();
   const isAdmin = location.pathname.startsWith("/admin");
+  const isHome = location.pathname === "/";
+
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Cinematic preloader — home route only, skip if already shown this session */}
+      {isHome && !preloaderDone && <Preloader />}
       {!isAdmin && <Navbar />}
       <div className="flex-1">
         <Routes>
@@ -62,9 +69,11 @@ function Layout() {
 export default function App() {
   return (
     <AdminAuthProvider>
-      <BrowserRouter>
-        <Layout />
-      </BrowserRouter>
+      <PreloaderProvider>
+        <BrowserRouter>
+          <Layout />
+        </BrowserRouter>
+      </PreloaderProvider>
     </AdminAuthProvider>
   );
 }

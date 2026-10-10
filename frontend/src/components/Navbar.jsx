@@ -1,10 +1,23 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
+import { usePreloader } from "../context/PreloaderContext";
 
 export default function Navbar() {
   const location = useLocation();
+  const { preloaderDone } = usePreloader();
   const [isOpen, setIsOpen] = useState(false);
   const isActive = (path) => location.pathname === path;
+  const isHome = location.pathname === "/";
+
+  // On home: navbar drops in after preloader. On all other routes: visible instantly.
+  const navVariants = isHome
+    ? {
+      hidden: { y: "-100%", opacity: 0 },
+      visible: { y: "0%", opacity: 1, transition: { duration: 0.7, ease: [0.2, 0.7, 0.2, 1] } },
+    }
+    : { visible: { y: "0%", opacity: 1 } };
+  const animateState = isHome ? (preloaderDone ? "visible" : "hidden") : "visible";
 
   useEffect(() => {
     setIsOpen(false);
@@ -18,7 +31,12 @@ export default function Navbar() {
   return (
     <>
       {/* Navbar Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#faf8ff]/90 backdrop-blur-xl border-b border-black/5">
+      <motion.header
+        className="fixed top-0 left-0 right-0 z-50 bg-[#faf8ff]/90 backdrop-blur-xl border-b border-black/5"
+        variants={navVariants}
+        initial={isHome ? "hidden" : "visible"}
+        animate={animateState}
+      >
         <div className="h-20 max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
           {/* Brand */}
           <Link to="/" className="flex items-center gap-3 group">
@@ -60,7 +78,7 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Full-Screen Mobile Navigation Overlay — OUTSIDE header, covers full viewport */}
       {isOpen && (
